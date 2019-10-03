@@ -19,7 +19,6 @@
 package org.ballerinalang.net.http;
 
 import org.ballerinalang.jvm.observability.ObservabilityConstants;
-import org.ballerinalang.jvm.observability.ObserveUtils;
 import org.ballerinalang.jvm.observability.ObserverContext;
 import org.ballerinalang.jvm.services.ErrorHandlerUtils;
 import org.ballerinalang.jvm.types.AttachedFunction;
@@ -40,7 +39,13 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinalang.jvm.observability.ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_FAILED;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_BINARY;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CLOSE;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CONTROL;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -61,46 +66,58 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
 
     @Override
     public void onHandshake(WebSocketHandshaker webSocketHandshaker) {
+
+        ObserverContext observerContext = new ObserverContext();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ObservabilityConstants.KEY_OBSERVER_CONTEXT, observerContext);
+
+
+        //check if there is a service to handle WebSocket requests
         WebSocketService wsService = WebSocketDispatcher.findService(servicesRegistry, webSocketHandshaker);
-        if (wsService == null) {
-            return;
-        }
-        HttpResource onUpgradeResource = wsService.getUpgradeResource();
-        if (onUpgradeResource != null) {
-            webSocketHandshaker.getHttpCarbonRequest().setProperty(HttpConstants.RESOURCES_CORS,
-                                                                   onUpgradeResource.getCorsHeaders());
-            AttachedFunction balResource = onUpgradeResource.getBalResource();
-            Object[] signatureParams = HttpDispatcher.getSignatureParameters(onUpgradeResource, webSocketHandshaker
-                    .getHttpCarbonRequest(), httpEndpointConfig);
 
-            ObjectValue httpConnection = (ObjectValue) signatureParams[0];
-            httpConnection.addNativeData(WebSocketConstants.WEBSOCKET_MESSAGE, webSocketHandshaker);
-            httpConnection.addNativeData(WebSocketConstants.WEBSOCKET_SERVICE, wsService);
-            httpConnection.addNativeData(HttpConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_MANAGER, connectionManager);
+        if (wsService != null) {
+            HttpResource onUpgradeResource = wsService.getUpgradeResource();
+            if (onUpgradeResource != null) {
+                webSocketHandshaker.getHttpCarbonRequest().setProperty(HttpConstants.RESOURCES_CORS,
+                                                                       onUpgradeResource.getCorsHeaders());
+                AttachedFunction balResource = onUpgradeResource.getBalResource();
+                Object[] signatureParams = HttpDispatcher.getSignatureParameters(onUpgradeResource, webSocketHandshaker
+                        .getHttpCarbonRequest(), httpEndpointConfig);
 
-            ObserverContext observerContext;
-            Map<String, Object> properties = new HashMap<>();
-            if (ObserveUtils.isObservabilityEnabled()) {
-                observerContext = new ObserverContext();
-                observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-                observerContext.setResourceName(balResource.getName());
-                // TODO: extract span context as a map and add to the observer context
-                properties.put(ObservabilityConstants.KEY_OBSERVER_CONTEXT, observerContext);
+                ObjectValue httpConnection = (ObjectValue) signatureParams[0];
+                httpConnection.addNativeData(WebSocketConstants.WEBSOCKET_MESSAGE, webSocketHandshaker);
+                httpConnection.addNativeData(WebSocketConstants.WEBSOCKET_SERVICE, wsService);
+                httpConnection.addNativeData(HttpConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_MANAGER, connectionManager);
+
+                Executor.submit(wsService.getScheduler(), onUpgradeResource.getParentService().getBalService(),
+                                balResource.getName(), new OnUpgradeResourceCallableUnitCallback(
+                                webSocketHandshaker, wsService), properties, signatureParams);
+            } else {
+                WebSocketUtil.handleHandshake(wsService, connectionManager, null, webSocketHandshaker,
+                                              null);
             }
 
-            Executor.submit(wsService.getScheduler(), onUpgradeResource.getParentService().getBalService(),
-                            balResource.getName(), new OnUpgradeResourceCallableUnitCallback(
-                            webSocketHandshaker, wsService), properties, signatureParams);
+            //Observe new successful connection request
+            WebSocketObservability.observeRequest(connectionManager.
+                                                          getConnectionInfo(webSocketHandshaker.getChannelId()),
+                           WEBSOCKET_MESSAGE_RESULT_SUCCESS);
         } else {
-            WebSocketUtil.handleHandshake(wsService, connectionManager, null, webSocketHandshaker, null);
+            //TODO: HANDLE FAILED REQUEST
+
+            //Observe failed connection requesr
+            WebSocketObservability.observeRequest(connectionManager.
+                                                          getConnectionInfo(webSocketHandshaker.getChannelId()),
+                           WEBSOCKET_MESSAGE_RESULT_FAILED);
+
         }
+
     }
 
     private class OnUpgradeResourceCallableUnitCallback implements CallableUnitCallback {
         private final WebSocketHandshaker webSocketHandshaker;
         private final WebSocketService wsService;
 
-        OnUpgradeResourceCallableUnitCallback(WebSocketHandshaker webSocketHandshaker,
+            OnUpgradeResourceCallableUnitCallback(WebSocketHandshaker webSocketHandshaker,
                                                      WebSocketService wsService) {
             this.webSocketHandshaker = webSocketHandshaker;
             this.wsService = wsService;
@@ -160,6 +177,11 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
+
+        //Observe new text message received
+        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT,
+                                       connectionManager.getConnectionInfo(
+                                               webSocketTextMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -171,6 +193,11 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
+
+        //Observe new binary message received
+        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY,
+                                       connectionManager.getConnectionInfo(
+                                               webSocketBinaryMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -182,6 +209,11 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
+
+        //Observe new control message received
+        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL,
+                                       connectionManager.getConnectionInfo(
+                                               webSocketControlMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -192,22 +224,38 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
+
+        //Observe new close message received
+        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE,
+                                       connectionManager.getConnectionInfo(
+                                               webSocketCloseMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
     public void onClose(WebSocketConnection webSocketConnection) {
+        WebSocketOpenConnectionInfo connectionInfo =
+                connectionManager.getConnectionInfo(webSocketConnection.getChannelId());
         try {
             WebSocketUtil.setListenerOpenField(
                     connectionManager.removeConnectionInfo(webSocketConnection.getChannelId()));
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
+        //TODO: Possible issue? Connections closed does not reach this part of the code is some situations?
+        //i.e when given invalid sub-protocols
+
+        //Observe connection closure
+        WebSocketObservability.observeClose(connectionInfo);
     }
 
     @Override
     public void onError(WebSocketConnection webSocketConnection, Throwable throwable) {
         WebSocketDispatcher.dispatchError(
                 connectionManager.getConnectionInfo(webSocketConnection.getChannelId()), throwable);
+
+        //Observe error
+        WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketConnection.getChannelId()),
+                                   WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED);
     }
 
     @Override
