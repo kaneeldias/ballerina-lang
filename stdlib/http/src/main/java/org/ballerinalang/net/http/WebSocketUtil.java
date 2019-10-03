@@ -64,9 +64,11 @@ public class WebSocketUtil {
         int maxFrameSize = wsService.getMaxFrameSize();
         ServerHandshakeFuture future = webSocketHandshaker.handshake(subProtocols, idleTimeoutInSeconds * 1000, headers,
                 maxFrameSize);
+
         future.setHandshakeListener(new ServerHandshakeListener() {
             @Override
             public void onSuccess(WebSocketConnection webSocketConnection) {
+
                 ObjectValue webSocketEndpoint = BallerinaValues.createObjectValue(PROTOCOL_HTTP_PKG_ID,
                         WebSocketConstants.WEBSOCKET_CALLER);
                 ObjectValue webSocketConnector = BallerinaValues.createObjectValue(PROTOCOL_HTTP_PKG_ID,
@@ -87,11 +89,14 @@ public class WebSocketUtil {
                             WebSocketConstants.RESOURCE_NAME_ON_OPEN);
                     if (onOpenResource != null) {
                         executeOnOpenResource(wsService, onOpenResource, webSocketEndpoint,
-                                webSocketConnection);
+                                              webSocketConnection);
                     } else {
                         readFirstFrame(webSocketConnection, webSocketConnector);
                     }
                 }
+
+                //Observe new connection
+                WebSocketObservability.observeConnection(connectionInfo);
             }
 
             @Override
@@ -105,6 +110,7 @@ public class WebSocketUtil {
                 }
                 logger.error("Unable to complete handshake", throwable);
             }
+
         });
     }
 

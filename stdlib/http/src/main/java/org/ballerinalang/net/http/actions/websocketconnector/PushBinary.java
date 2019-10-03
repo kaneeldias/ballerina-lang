@@ -25,6 +25,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.http.WebSocketConstants;
+import org.ballerinalang.net.http.WebSocketObservability;
 import org.ballerinalang.net.http.WebSocketOpenConnectionInfo;
 import org.ballerinalang.net.http.WebSocketUtil;
 import org.ballerinalang.net.http.exception.WebSocketException;
@@ -34,6 +35,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 import static org.ballerinalang.net.http.WebSocketConstants.ErrorCode.WsConnectionError;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_SENT;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_BINARY;
 
 /**
  * {@code Get} is the GET action implementation of the HTTP Connector.
@@ -53,17 +57,28 @@ public class PushBinary {
     public static Object pushBinary(Strand strand, ObjectValue wsConnection, ArrayValue binaryData,
                                     boolean finalFrame) {
         NonBlockingCallback callback = new NonBlockingCallback(strand);
+
         try {
             WebSocketOpenConnectionInfo connectionInfo = (WebSocketOpenConnectionInfo) wsConnection
                     .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO);
             ChannelFuture webSocketChannelFuture = connectionInfo.getWebSocketConnection().pushBinary(
                     ByteBuffer.wrap(binaryData.getBytes()), finalFrame);
             WebSocketUtil.handleWebSocketCallback(callback, webSocketChannelFuture, log);
+
+            //Observe binary message sent
+            WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_BINARY, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+                                               connectionInfo);
         } catch (Exception e) {
             log.error("Error occurred when pushing binary data", e);
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
             callback.notifySuccess();
+
+            //Observe error when sending binary message
+            WebSocketObservability.observeError((WebSocketOpenConnectionInfo) wsConnection
+                                 .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
+                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_BINARY);
         }
+
         return null;
     }
 
