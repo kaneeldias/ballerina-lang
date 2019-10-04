@@ -71,10 +71,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         Map<String, Object> properties = new HashMap<>();
         properties.put(ObservabilityConstants.KEY_OBSERVER_CONTEXT, observerContext);
 
-
         //check if there is a service to handle WebSocket requests
         WebSocketService wsService = WebSocketDispatcher.findService(servicesRegistry, webSocketHandshaker);
-
         if (wsService != null) {
             HttpResource onUpgradeResource = wsService.getUpgradeResource();
             if (onUpgradeResource != null) {
@@ -102,15 +100,11 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
                                                           getConnectionInfo(webSocketHandshaker.getChannelId()),
                            WEBSOCKET_MESSAGE_RESULT_SUCCESS);
         } else {
-            //TODO: HANDLE FAILED REQUEST
-
-            //Observe failed connection requesr
+            //Observe failed connection request
             WebSocketObservability.observeRequest(connectionManager.
                                                           getConnectionInfo(webSocketHandshaker.getChannelId()),
                            WEBSOCKET_MESSAGE_RESULT_FAILED);
-
         }
-
     }
 
     private class OnUpgradeResourceCallableUnitCallback implements CallableUnitCallback {

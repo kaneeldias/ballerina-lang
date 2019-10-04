@@ -74,7 +74,6 @@ public class Close {
                 //Observe close message sent
                 WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_CLOSE, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                    connectionInfo);
-
             });
         } catch (Exception e) {
             log.error("Error occurred when closing the connections", e);
@@ -108,7 +107,6 @@ public class Close {
 
                 //Observe connection closure error
                 WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE);
-
             } else {
                 callback.setReturnValues(null);
             }
@@ -131,7 +129,6 @@ public class Close {
 
                     //Observe connection closure error
                     WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE);
-
                 }
             }
         } catch (InterruptedException err) {

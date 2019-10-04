@@ -35,7 +35,6 @@ import java.util.Set;
 
 import static org.ballerinalang.jvm.observability.ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET;
 
-
 /**
  * Providing observability functionality to WebSockets.
  *
@@ -114,7 +113,6 @@ public class WebSocketObservability {
 
             //Log request
             logger.info("WS connection request received");
-
         }
     }
 
@@ -153,8 +151,6 @@ public class WebSocketObservability {
                             WEBSOCKET_UNKNOWN,
                             tags.get(TAG_SERVICE));
             }
-
-
         }
     }
 
@@ -199,7 +195,6 @@ public class WebSocketObservability {
                             tags.get(TAG_SERVICE),
                             type);
             }
-
         }
     }
 
@@ -242,8 +237,6 @@ public class WebSocketObservability {
                             tags.get(TAG_SERVICE),
                             type);
             }
-
-
         }
     }
 
@@ -281,7 +274,6 @@ public class WebSocketObservability {
                             WEBSOCKET_UNKNOWN,
                             tags.get(TAG_SERVICE));
             }
-
         }
     }
 
@@ -330,7 +322,6 @@ public class WebSocketObservability {
 
             //Log error
             //TODO: Necessary? Should be handled where error occurs?
-
         }
     }
 

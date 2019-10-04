@@ -78,7 +78,6 @@ public class PushBinary {
                                  .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
                          WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_BINARY);
         }
-
         return null;
     }
 
