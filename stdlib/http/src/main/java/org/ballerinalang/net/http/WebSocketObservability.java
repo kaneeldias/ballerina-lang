@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+
 package org.ballerinalang.net.http;
 
 import org.ballerinalang.jvm.observability.ObserveUtils;
@@ -7,6 +26,8 @@ import org.ballerinalang.jvm.observability.metrics.MetricId;
 import org.ballerinalang.jvm.observability.metrics.MetricRegistry;
 import org.ballerinalang.jvm.observability.metrics.Tag;
 import org.ballerinalang.jvm.observability.metrics.Tags;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +42,8 @@ import static org.ballerinalang.jvm.observability.ObservabilityConstants.SERVER_
  * @since 1.1.0
  */
 public class WebSocketObservability {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketObservability.class);
 
     //Observability Constants
     private static final String TAG_CONNECTION_ID = "connectionID";
@@ -83,6 +106,10 @@ public class WebSocketObservability {
             //Increment requests metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_REQUESTS,
                                                 METRIC_REQUESTS_DESC, allTags)).increment();
+
+            //Log request
+            logger.info("WS connection request received");
+
         }
     }
 
@@ -110,6 +137,16 @@ public class WebSocketObservability {
             //Increment current connections metric
             metricRegistry.gauge(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_CONNECTIONS,
                                               METRIC_CONNECTIONS_DESC, allTags)).increment();
+
+            //Log connection
+            try {
+                logger.info("WS new connection established. connectionID: {}, service: {}",
+                            connectionInfo.getWebSocketConnection().getChannelId(),
+                            tags.get(TAG_SERVICE));
+            } catch (IllegalAccessException e) {
+                //TODO: handle exception
+            }
+
 
         }
     }
@@ -142,6 +179,17 @@ public class WebSocketObservability {
             //Increment message sent metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_MESSAGES_SENT,
                                                 METRIC_MESSAGES_SENT_DESC, allTags)).increment();
+
+            //Log message sent
+            try {
+                logger.info("WS message sent. connectionID: {}, service: {}, type: {}",
+                            connectionInfo.getWebSocketConnection().getChannelId(),
+                            tags.get(TAG_SERVICE),
+                            type);
+            } catch (IllegalAccessException e) {
+                //TODO: handle exception
+            }
+
         }
     }
 
@@ -171,6 +219,17 @@ public class WebSocketObservability {
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_MESSAGES_RECEIVED,
                                                 METRIC_MESSAGES_RECEIVED_DESC, allTags)).increment();
 
+            //Log message received
+            try {
+                logger.info("WS message received. connectionID: {}, service: {}, type:{}",
+                            connectionInfo.getWebSocketConnection().getChannelId(),
+                            tags.get(TAG_SERVICE),
+                            type);
+            } catch (IllegalAccessException e) {
+                //TODO: handle exception
+            }
+
+
         }
     }
 
@@ -197,6 +256,16 @@ public class WebSocketObservability {
             //Decrement current connections metric
             metricRegistry.gauge(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_CONNECTIONS,
                                               METRIC_CONNECTIONS_DESC, allTags)).decrement();
+
+            //Log connection closure
+            try {
+                logger.info("WS connection closed. connectionID: {}, service: {}",
+                            connectionInfo.getWebSocketConnection().getChannelId(),
+                            tags.get(TAG_SERVICE));
+            } catch (IllegalAccessException e) {
+                //TODO: handle exception
+            }
+
         }
     }
 
@@ -232,6 +301,10 @@ public class WebSocketObservability {
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_ERRORS,
                                                 METRIC_ERRORS_DESC, allTags)).increment();
+
+            //Log error
+            //TODO: Necessary? Should be handled where error occurs?
+
         }
     }
 
