@@ -84,6 +84,8 @@ public class WebSocketObservability {
     public static final String WEBSOCKET_ERROR_TYPE_MESSAGE_SENT = "message_sent";
     static final String WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
 
+    private static final String WEBSOCKET_UNKNOWN = "unknown";
+
     /**
      * This method observes all incoming WebSocket connection requests.
      *
@@ -97,7 +99,7 @@ public class WebSocketObservability {
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: Handle Exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
 
             setObserveService(observerContext, connectionInfo);
@@ -133,7 +135,7 @@ public class WebSocketObservability {
                 observerContext.addTag(TAG_CONNECTION_ID,
                                        connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: handle exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
 
@@ -153,7 +155,9 @@ public class WebSocketObservability {
                             connectionInfo.getWebSocketConnection().getChannelId(),
                             tags.get(TAG_SERVICE));
             } catch (IllegalAccessException e) {
-                //TODO: handle exception
+                logger.info("WS new connection established. connectionID: {}, service: {}",
+                            WEBSOCKET_UNKNOWN,
+                            tags.get(TAG_SERVICE));
             }
 
 
@@ -180,7 +184,7 @@ public class WebSocketObservability {
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: Handle exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
 
@@ -202,7 +206,10 @@ public class WebSocketObservability {
                             tags.get(TAG_SERVICE),
                             type);
             } catch (IllegalAccessException e) {
-                //TODO: handle exception
+                logger.info("WS message sent. connectionID: {}, service: {}, type: {}",
+                            WEBSOCKET_UNKNOWN,
+                            tags.get(TAG_SERVICE),
+                            type);
             }
 
         }
@@ -225,7 +232,7 @@ public class WebSocketObservability {
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: Handle Exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
 
@@ -246,7 +253,10 @@ public class WebSocketObservability {
                             tags.get(TAG_SERVICE),
                             type);
             } catch (IllegalAccessException e) {
-                //TODO: handle exception
+                logger.info("WS message received. connectionID: {}, service: {}, type:{}",
+                            WEBSOCKET_UNKNOWN,
+                            tags.get(TAG_SERVICE),
+                            type);
             }
 
 
@@ -266,7 +276,7 @@ public class WebSocketObservability {
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: Handle Exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
 
             setObserveService(observerContext, connectionInfo);
@@ -287,7 +297,9 @@ public class WebSocketObservability {
                             connectionInfo.getWebSocketConnection().getChannelId(),
                             tags.get(TAG_SERVICE));
             } catch (IllegalAccessException e) {
-                //TODO: handle exception
+                logger.info("WS connection closed. connectionID: {}, service: {}",
+                            WEBSOCKET_UNKNOWN,
+                            tags.get(TAG_SERVICE));
             }
 
         }
@@ -320,7 +332,7 @@ public class WebSocketObservability {
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
-                //TODO: Handle Exception
+                observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
 
             setObserveService(observerContext, connectionInfo);
