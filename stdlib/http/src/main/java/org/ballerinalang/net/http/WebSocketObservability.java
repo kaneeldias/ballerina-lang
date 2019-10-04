@@ -101,7 +101,6 @@ public class WebSocketObservability {
             } catch (IllegalAccessException e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
-
             setObserveService(observerContext, connectionInfo);
             observerContext.addTag(TAG_KEY_RESULT, result);
             Map<String, String> tags = observerContext.getTags();
@@ -109,7 +108,6 @@ public class WebSocketObservability {
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
-
             //Increment requests metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_REQUESTS,
                                                 METRIC_REQUESTS_DESC, allTags)).increment();
@@ -127,10 +125,8 @@ public class WebSocketObservability {
      */
     static void observeConnection(WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
-
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-
             try {
                 observerContext.addTag(TAG_CONNECTION_ID,
                                        connectionInfo.getWebSocketConnection().getChannelId());
@@ -138,13 +134,11 @@ public class WebSocketObservability {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
-
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
-
             //Increment current connections metric
             metricRegistry.gauge(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_CONNECTIONS,
                                               METRIC_CONNECTIONS_DESC, allTags)).increment();
@@ -173,28 +167,22 @@ public class WebSocketObservability {
      */
     public static void observePush(String type, String result, WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
-
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-
             //Define type of message (text, binary, control, clsoe) and result (successful, failed)
             observerContext.addTag(TAG_MESSAGE_TYPE, type);
             observerContext.addTag(TAG_KEY_RESULT, result);
-
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
-
-
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
-
             //Increment message sent metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_MESSAGES_SENT,
                                                 METRIC_MESSAGES_SENT_DESC, allTags)).increment();
@@ -225,23 +213,19 @@ public class WebSocketObservability {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-
             //Define type of message (text, binary, control, close)
             observerContext.addTag(TAG_MESSAGE_TYPE, type);
-
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
-
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
-
             //Increment messages received metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_MESSAGES_RECEIVED,
                                                 METRIC_MESSAGES_RECEIVED_DESC, allTags)).increment();
@@ -272,21 +256,17 @@ public class WebSocketObservability {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
-
             setObserveService(observerContext, connectionInfo);
-
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
-
             //Decrement current connections metric
             metricRegistry.gauge(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_CONNECTIONS,
                                               METRIC_CONNECTIONS_DESC, allTags)).decrement();
@@ -328,26 +308,23 @@ public class WebSocketObservability {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
             } catch (IllegalAccessException e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
-
             setObserveService(observerContext, connectionInfo);
             observerContext.addTag(TAG_ERROR_TYPE, errorType);
-
             //If the error is related to sending/receiving a message, set the type of message
             if (messageType != null) {
                 observerContext.addTag(TAG_MESSAGE_TYPE, messageType);
             }
-
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());
 
             MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
+            //Increment errors metric
             metricRegistry.counter(new MetricId(SERVER_CONNECTOR_WEBSOCKET + "_" + METRIC_ERRORS,
                                                 METRIC_ERRORS_DESC, allTags)).increment();
 
@@ -367,7 +344,6 @@ public class WebSocketObservability {
      */
     private static void setObserveService(ObserverContext observerContext, WebSocketOpenConnectionInfo connectionInfo) {
         String service = connectionInfo.getService().getBasePath();
-
         if (service != null) {
             //If base path is set (i.e. server)
             observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_SERVER);
