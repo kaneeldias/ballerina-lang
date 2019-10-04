@@ -202,7 +202,6 @@ public class WebSocketDispatcher {
         }
         Executor.submit(wsService.getScheduler(), wsService.getBalService(), WebSocketConstants.RESOURCE_NAME_ON_BINARY,
                 new WebSocketResourceCallableUnitCallback(webSocketConnection), null, bValues);
-
     }
 
     static void dispatchControlMessage(WebSocketOpenConnectionInfo connectionInfo,

@@ -40,7 +40,6 @@ import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAG
 public class WebSocketClientConnectorListener implements WebSocketConnectorListener {
     private WebSocketOpenConnectionInfo connectionInfo;
 
-
     public void setConnectionInfo(WebSocketOpenConnectionInfo connectionInfo) {
         this.connectionInfo = connectionInfo;
     }
@@ -60,7 +59,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
 
         //Observe text message received
         WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT, connectionInfo);
-
     }
 
     @Override
@@ -73,7 +71,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
 
         //Observe binary message received
         WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY, connectionInfo);
-
     }
 
     @Override
