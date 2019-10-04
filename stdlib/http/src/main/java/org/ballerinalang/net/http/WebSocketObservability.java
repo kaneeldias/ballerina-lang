@@ -84,7 +84,12 @@ public class WebSocketObservability {
     public static final String WEBSOCKET_ERROR_TYPE_MESSAGE_SENT = "message_sent";
     static final String WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
 
-    //Observe all WebSocket connection requests
+    /**
+     * This method observes all incoming WebSocket connection requests.
+     *
+     * @param connectionInfo information regarding connection.
+     * @param result whether the connection was successful or not.
+     */
     static void observeRequest(WebSocketOpenConnectionInfo connectionInfo, String result) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
@@ -113,7 +118,11 @@ public class WebSocketObservability {
         }
     }
 
-    //Observe all WebSocket connections
+    /**
+     * This method observes successful WebSocket connections.
+     *
+     * @param connectionInfo information regarding connection.
+     */
     static void observeConnection(WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
 
@@ -151,7 +160,13 @@ public class WebSocketObservability {
         }
     }
 
-    //Observe all messages sent (pushed)
+    /**
+     * This method observes messages pushed (sent).
+     *
+     * @param type type of message pushed (text, binary, control, close).
+     * @param result whether the push was successful or not.
+     * @param connectionInfo information regarding connection.
+     */
     public static void observePush(String type, String result, WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
 
@@ -193,7 +208,12 @@ public class WebSocketObservability {
         }
     }
 
-    //Observe all messages received
+    /**
+     * This method observes messages received.
+     *
+     * @param type type of message pushed (text, binary, control, close).
+     * @param connectionInfo information regarding connection.
+     */
     static void observeOnMessage(String type, WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
@@ -233,7 +253,11 @@ public class WebSocketObservability {
         }
     }
 
-    //Observe all WebSocket closes
+    /**
+     * This method observes WebSocket connection closures.
+     *
+     * @param connectionInfo information regarding connection.
+     */
     static void observeClose(WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
@@ -269,12 +293,25 @@ public class WebSocketObservability {
         }
     }
 
-    //Observe all WebSocket errors (not related to message sending/receiving)
+    /**
+     * This method observes WebSocket errors where the errorType is not related to a message being sent or received,
+     * or the type of the message is unknown.
+     *
+     * @param connectionInfo information regarding connection.
+     * @param errorType type of error (connection, closure, message sent/received).
+     */
     public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType) {
         observeError(connectionInfo, errorType, null);
     }
 
-    //Observe all WebSocket errors
+    /**
+     * This method observes WebSocket errors where the errorType is related to a message being sent or received.
+     * and the type of the message is known.
+     *
+     * @param connectionInfo information regarding connection.
+     * @param errorType type of error (connection, closure, message sent/received).
+     * @param messageType type of message (text, binary, control, close).
+     */
     public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType, String messageType) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
@@ -308,9 +345,14 @@ public class WebSocketObservability {
         }
     }
 
-    //Determine whether the current context is server or client and set tag respectively.
-    //If server, define the associated service base path
-    //If client, define the associated remote URI
+    /**
+     * This method determines whether the current context is server or client and sets the tags accordingly.
+     * If server, the service bas path.
+     * If client, the remote URL
+     *
+     * @param observerContext current observer context
+     * @param connectionInfo information regarding connection.
+     */
     private static void setObserveService(ObserverContext observerContext, WebSocketOpenConnectionInfo connectionInfo) {
         String service = connectionInfo.getService().getBasePath();
 
