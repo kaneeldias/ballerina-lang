@@ -73,7 +73,6 @@ public class WebSocketObservability {
             }
 
             setObserveService(observerContext, connectionInfo);
-
             observerContext.addTag(TAG_KEY_RESULT, result);
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
