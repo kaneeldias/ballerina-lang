@@ -76,14 +76,13 @@ public class Close {
                                                    connectionInfo);
             });
         } catch (Exception e) {
-            log.error("Error occurred when closing the connections", e);
             callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionError, e.getMessage()));
             callback.notifySuccess();
 
             //Observe error when sending close message
             WebSocketObservability.observeError((WebSocketOpenConnectionInfo)
                                  wsConnection.getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                         WEBSOCKET_ERROR_TYPE_CLOSE);
+                         WEBSOCKET_ERROR_TYPE_CLOSE, e.getMessage());
         }
         return null;
     }
@@ -106,7 +105,7 @@ public class Close {
                         new WebSocketException(ErrorCode.WsConnectionClosureError, cause.getMessage()));
 
                 //Observe connection closure error
-                WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE);
+                WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, cause.getMessage());
             } else {
                 callback.setReturnValues(null);
             }
@@ -128,15 +127,15 @@ public class Close {
                     callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionClosureError, errMsg));
 
                     //Observe connection closure error
-                    WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE);
+                    WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
                 }
             }
         } catch (InterruptedException err) {
-            callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionClosureError,
-                                                            "Connection interrupted while closing the connection"));
+            String errMsg = "Connection interrupted while closing the connection.";
+            callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionClosureError, errMsg));
 
             //Observe connection closure error
-            WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE);
+            WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
 
             Thread.currentThread().interrupt();
         }

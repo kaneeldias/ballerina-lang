@@ -65,14 +65,13 @@ public class PushText {
             WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_TEXT, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                connectionInfo);
         } catch (Exception e) {
-            log.error("Error occurred when pushing text data", e);
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
             callback.notifySuccess();
 
             //Observe error when sending text message
             WebSocketObservability.observeError((WebSocketOpenConnectionInfo) wsConnection
                                  .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_TEXT);
+                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_TEXT, e.getMessage());
         }
         return null;
     }
