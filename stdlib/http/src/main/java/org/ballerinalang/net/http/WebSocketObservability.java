@@ -82,6 +82,7 @@ public class WebSocketObservability {
     public static final String WEBSOCKET_ERROR_TYPE_CLOSE = "close";
     public static final String WEBSOCKET_ERROR_TYPE_MESSAGE_SENT = "message_sent";
     static final String WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
+    static final String WEBSOCKET_ERROR_TYPE_UNEXPECTED = "unexpected";
 
     private static final String WEBSOCKET_UNKNOWN = "unknown";
 
@@ -283,9 +284,10 @@ public class WebSocketObservability {
      *
      * @param connectionInfo information regarding connection.
      * @param errorType type of error (connection, closure, message sent/received).
+     * @param errorMessage error message.
      */
-    public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType) {
-        observeError(connectionInfo, errorType, null);
+    public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType, String errorMessage) {
+        observeError(connectionInfo, errorType, null, errorMessage);
     }
 
     /**
@@ -295,8 +297,10 @@ public class WebSocketObservability {
      * @param connectionInfo information regarding connection.
      * @param errorType type of error (connection, closure, message sent/received).
      * @param messageType type of message (text, binary, control, close).
+     * @param errorMessage error message.
      */
-    public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType, String messageType) {
+    public static void observeError(WebSocketOpenConnectionInfo connectionInfo, String errorType, String messageType,
+                                    String errorMessage) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
@@ -321,7 +325,14 @@ public class WebSocketObservability {
                                                 METRIC_ERRORS_DESC, allTags)).increment();
 
             //Log error
-            //TODO: Necessary? Should be handled where error occurs?
+            if (messageType == null) {
+                logger.error("type:{}, message: {}, connectionId: {}, service:{}",
+                             errorType, errorMessage, getConnectionId(connectionInfo), getService(connectionInfo));
+            } else {
+                logger.error("type:{}/{}, message: {}, connectionId: {}, service:{}",
+                             errorType, messageType, errorMessage, getConnectionId(connectionInfo),
+                             getService(connectionInfo));
+            }
         }
     }
 
@@ -346,6 +357,21 @@ public class WebSocketObservability {
         }
     }
 
+    private static String getService(WebSocketOpenConnectionInfo connectionInfo) {
+        String service = connectionInfo.getService().getBasePath();
+        if (service != null) {
+            return service;
+        }
+        return connectionInfo.getWebSocketEndpoint().getStringValue("url");
+    }
+
+    private static String getConnectionId(WebSocketOpenConnectionInfo connectionInfo) {
+        try {
+            return connectionInfo.getWebSocketConnection().getChannelId();
+        } catch (IllegalAccessException e) {
+            return WEBSOCKET_UNKNOWN;
+        }
+    }
     private WebSocketObservability(){
 
     }

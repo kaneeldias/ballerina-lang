@@ -68,14 +68,13 @@ public class Pong {
             WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_CONTROL, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                connectionInfo);
         } catch (Exception e) {
-            log.error("Error occurred when ponging", e);
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
             callback.notifySuccess();
 
             //Observe error when sending pong message
             WebSocketObservability.observeError((WebSocketOpenConnectionInfo) wsConnection
                                  .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_CONTROL);
+                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_CONTROL, e.getMessage());
         }
         return null;
     }

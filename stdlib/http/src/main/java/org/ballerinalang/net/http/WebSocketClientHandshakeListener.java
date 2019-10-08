@@ -85,7 +85,7 @@ public class WebSocketClientHandshakeListener implements ClientHandshakeListener
         WebSocketDispatcher.dispatchError(connectionInfo, throwable);
 
         //Observe connection error
-        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CONNECTION);
+        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CONNECTION, throwable.getMessage());
     }
 
     private WebSocketOpenConnectionInfo getWebSocketOpenConnectionInfo(WebSocketConnection webSocketConnection,

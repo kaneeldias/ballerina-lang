@@ -314,7 +314,8 @@ public class WebSocketDispatcher {
         AttachedFunction onErrorResource = webSocketService.getResourceByName(
                 WebSocketConstants.RESOURCE_NAME_ON_ERROR);
         if (isUnexpectedError(throwable)) {
-            log.error("Unexpected error", throwable);
+            WebSocketObservability.observeError(connectionInfo, WebSocketObservability.WEBSOCKET_ERROR_TYPE_UNEXPECTED,
+            "Unexpected error");
         }
         if (onErrorResource == null) {
             ErrorHandlerUtils.printError(throwable);

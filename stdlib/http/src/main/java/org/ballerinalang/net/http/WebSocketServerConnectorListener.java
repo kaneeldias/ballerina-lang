@@ -39,6 +39,7 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_CONNECTION;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_FAILED;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
@@ -104,6 +105,10 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
             WebSocketObservability.observeRequest(connectionManager.
                                                           getConnectionInfo(webSocketHandshaker.getChannelId()),
                            WEBSOCKET_MESSAGE_RESULT_FAILED);
+
+            //Observe error
+            WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketHandshaker.getChannelId()),
+                                                WEBSOCKET_ERROR_TYPE_CONNECTION, "service not found");
         }
     }
 
@@ -249,7 +254,7 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
 
         //Observe error
         WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketConnection.getChannelId()),
-                                   WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED);
+                                   WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED, throwable.getMessage());
     }
 
     @Override

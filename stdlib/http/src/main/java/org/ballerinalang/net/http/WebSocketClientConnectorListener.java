@@ -102,7 +102,8 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         WebSocketDispatcher.dispatchError(connectionInfo, throwable);
 
         //Observe message received error
-        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED);
+        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED,
+                                            throwable.getMessage());
     }
 
     @Override
