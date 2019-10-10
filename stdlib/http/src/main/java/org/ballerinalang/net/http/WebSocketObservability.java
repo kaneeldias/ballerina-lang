@@ -381,7 +381,6 @@ public class WebSocketObservability {
             return WEBSOCKET_UNKNOWN;
         }
     }
-
     private WebSocketObservability(){
 
     }
