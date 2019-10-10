@@ -65,7 +65,6 @@ public class WebSocketObservability {
     private static final String METRIC_MESSAGES_SENT_DESC = "Number of messages sent";
 
     public static final String WEBSOCKET_MESSAGE_RESULT_SUCCESS = "success";
-    static final String WEBSOCKET_MESSAGE_RESULT_FAILED = "failed";
 
     private static final String METRIC_ERRORS = "errors";
     private static final String METRIC_ERRORS_DESC = "Number of errors";
@@ -306,7 +305,7 @@ public class WebSocketObservability {
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
             try {
                 observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
@@ -345,30 +344,40 @@ public class WebSocketObservability {
      * @param connectionInfo information regarding connection.
      */
     private static void setObserveService(ObserverContext observerContext, WebSocketOpenConnectionInfo connectionInfo) {
-        String service = connectionInfo.getService().getBasePath();
-        if (service != null) {
-            //If base path is set (i.e. server)
-            observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_SERVER);
-            observerContext.addTag(TAG_SERVICE, service);
-        } else {
-            //if base path is not set (i.e. client)
-            observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_CLIENT);
-            observerContext.addTag(TAG_SERVICE, connectionInfo.getWebSocketEndpoint().getStringValue("url"));
+        try {
+            String service = connectionInfo.getService().getBasePath();
+            if (service != null) {
+                //If base path is set (i.e. server)
+                observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_SERVER);
+                observerContext.addTag(TAG_SERVICE, service);
+            } else {
+                //if base path is not set (i.e. client)
+                observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_CLIENT);
+                observerContext.addTag(TAG_SERVICE, connectionInfo.getWebSocketEndpoint().getStringValue("url"));
+            }
+        } catch (NullPointerException e) {
+            observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_UNKNOWN);
+            observerContext.addTag(TAG_SERVICE, WEBSOCKET_UNKNOWN);
         }
+
     }
 
     private static String getService(WebSocketOpenConnectionInfo connectionInfo) {
-        String service = connectionInfo.getService().getBasePath();
-        if (service != null) {
-            return service;
+        try {
+            String service = connectionInfo.getService().getBasePath();
+            if (service != null) {
+                return service;
+            }
+            return connectionInfo.getWebSocketEndpoint().getStringValue("url");
+        } catch (Exception e) {
+            return WEBSOCKET_UNKNOWN;
         }
-        return connectionInfo.getWebSocketEndpoint().getStringValue("url");
     }
 
     private static String getConnectionId(WebSocketOpenConnectionInfo connectionInfo) {
         try {
             return connectionInfo.getWebSocketConnection().getChannelId();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             return WEBSOCKET_UNKNOWN;
         }
     }

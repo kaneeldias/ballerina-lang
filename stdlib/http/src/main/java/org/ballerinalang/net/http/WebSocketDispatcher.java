@@ -93,7 +93,6 @@ public class WebSocketDispatcher {
         } catch (WebSocketException | URITemplateException e) {
             String message = "No Service found to handle the service request";
             webSocketHandshaker.cancelHandshake(404, message);
-            log.error(message, e);
             return null;
         }
     }

@@ -41,7 +41,6 @@ import java.util.Map;
 
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_CONNECTION;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_FAILED;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_BINARY;
 import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CLOSE;
@@ -95,17 +94,11 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
                 WebSocketUtil.handleHandshake(wsService, connectionManager, null, webSocketHandshaker,
                                               null);
             }
-
             //Observe new successful connection request
             WebSocketObservability.observeRequest(connectionManager.
                                                           getConnectionInfo(webSocketHandshaker.getChannelId()),
                            WEBSOCKET_MESSAGE_RESULT_SUCCESS);
         } else {
-            //Observe failed connection request
-            WebSocketObservability.observeRequest(connectionManager.
-                                                          getConnectionInfo(webSocketHandshaker.getChannelId()),
-                           WEBSOCKET_MESSAGE_RESULT_FAILED);
-
             //Observe error
             WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketHandshaker.getChannelId()),
                                                 WEBSOCKET_ERROR_TYPE_CONNECTION, "service not found");
