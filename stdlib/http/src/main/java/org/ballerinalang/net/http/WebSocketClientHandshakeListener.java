@@ -27,7 +27,6 @@ import org.wso2.transport.http.netty.message.HttpCarbonResponse;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinalang.net.http.HttpConstants.PROTOCOL_HTTP_PKG_ID;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
 
 /**
  * The handshake listener for the client.
@@ -87,7 +86,8 @@ public class WebSocketClientHandshakeListener implements ClientHandshakeListener
 
         //Observe connection error
         WebSocketObservabilityUtil.observeError(connectionInfo,
-                                                WEBSOCKET_ERROR_TYPE_CONNECTION, throwable.getMessage());
+                                                WebSocketObservabilityConstants.ERROR_TYPE_CONNECTION,
+                                                throwable.getMessage());
     }
 
     private WebSocketOpenConnectionInfo getWebSocketOpenConnectionInfo(WebSocketConnection webSocketConnection,

@@ -53,12 +53,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.ballerinalang.net.http.WebSocketConstants.STATUS_CODE_ABNORMAL_CLOSURE;
 import static org.ballerinalang.net.http.WebSocketConstants.STATUS_CODE_FOR_NO_STATUS_CODE_PRESENT;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_UNEXPECTED;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_BINARY;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * {@code WebSocketDispatcher} This is the web socket request dispatcher implementation which finds best matching
@@ -109,7 +103,7 @@ public class WebSocketDispatcher {
         WebSocketService wsService = connectionInfo.getService();
 
         //Observe text message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WebSocketObservabilityConstants.MESSAGE_TYPE_TEXT, connectionInfo);
 
         AttachedFunction onTextMessageResource = wsService.getResourceByName(WebSocketConstants.RESOURCE_NAME_ON_TEXT);
         if (onTextMessageResource == null) {
@@ -195,7 +189,8 @@ public class WebSocketDispatcher {
         WebSocketService wsService = connectionInfo.getService();
 
         //Observe binary message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WebSocketObservabilityConstants.MESSAGE_TYPE_BINARY,
+                                                    connectionInfo);
 
         AttachedFunction onBinaryMessageResource = wsService.getResourceByName(
                 WebSocketConstants.RESOURCE_NAME_ON_BINARY);
@@ -226,7 +221,8 @@ public class WebSocketDispatcher {
         }
 
         //Observe control message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WebSocketObservabilityConstants.MESSAGE_TYPE_CONTROL,
+                                                    connectionInfo);
     }
 
     private static void dispatchPingMessage(WebSocketOpenConnectionInfo connectionInfo,
@@ -274,7 +270,8 @@ public class WebSocketDispatcher {
         WebSocketService wsService = connectionInfo.getService();
 
         //Observe close message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WebSocketObservabilityConstants.MESSAGE_TYPE_CLOSE,
+                                                    connectionInfo);
 
         AttachedFunction onCloseResource = wsService.getResourceByName(WebSocketConstants.RESOURCE_NAME_ON_CLOSE);
         int closeCode = closeMessage.getCloseCode();
@@ -334,11 +331,13 @@ public class WebSocketDispatcher {
         AttachedFunction onErrorResource = webSocketService.getResourceByName(
                 WebSocketConstants.RESOURCE_NAME_ON_ERROR);
         if (isUnexpectedError(throwable)) {
-            WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_UNEXPECTED,
+            WebSocketObservabilityUtil.observeError(connectionInfo,
+                                                    WebSocketObservabilityConstants.ERROR_TYPE_UNEXPECTED,
                                                     "Unexpected error");
         } else {
             //Observe message received error
-            WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED,
+            WebSocketObservabilityUtil.observeError(connectionInfo,
+                                                    WebSocketObservabilityConstants.ERROR_TYPE_MESSAGE_RECEIVED,
                                                     throwable.getMessage());
         }
         if (onErrorResource == null) {

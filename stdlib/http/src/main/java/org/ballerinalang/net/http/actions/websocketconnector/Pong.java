@@ -25,6 +25,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.http.WebSocketConstants;
+import org.ballerinalang.net.http.WebSocketObservabilityConstants;
 import org.ballerinalang.net.http.WebSocketObservabilityUtil;
 import org.ballerinalang.net.http.WebSocketOpenConnectionInfo;
 import org.ballerinalang.net.http.WebSocketUtil;
@@ -35,9 +36,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 import static org.ballerinalang.net.http.WebSocketConstants.ErrorCode.WsConnectionError;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_SENT;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
 
 /**
  * {@code Get} is the GET action implementation of the HTTP Connector.
@@ -65,7 +63,8 @@ public class Pong {
             WebSocketUtil.handleWebSocketCallback(callback, future, log);
 
             //Observe pong message sent
-            WebSocketObservabilityUtil.observeSend(WEBSOCKET_MESSAGE_TYPE_CONTROL, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+            WebSocketObservabilityUtil.observeSend(WebSocketObservabilityConstants.MESSAGE_TYPE_CONTROL,
+                                                   WebSocketObservabilityConstants.MESSAGE_RESULT_SUCCESS,
                                                    connectionInfo);
         } catch (Exception e) {
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
@@ -74,7 +73,8 @@ public class Pong {
             //Observe error when sending pong message
             WebSocketObservabilityUtil.observeError((WebSocketOpenConnectionInfo) wsConnection
                                  .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                                                    WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_CONTROL,
+                                                    WebSocketObservabilityConstants.ERROR_TYPE_MESSAGE_SENT,
+                                                    WebSocketObservabilityConstants.MESSAGE_TYPE_CONTROL,
                                                     e.getMessage());
         }
         return null;

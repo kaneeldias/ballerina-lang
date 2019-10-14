@@ -43,26 +43,26 @@ public class WebSocketObservabilityConstants {
     static final String METRIC_MESSAGES_SENT = "messages_sent";
     static final String METRIC_MESSAGES_SENT_DESC = "Number of messages sent";
 
-    public static final String WEBSOCKET_MESSAGE_RESULT_SUCCESS = "success";
+    public static final String MESSAGE_RESULT_SUCCESS = "success";
 
     static final String METRIC_ERRORS = "errors";
     static final String METRIC_ERRORS_DESC = "Number of errors";
 
-    static final String WEBSOCKET_CLIENT_OR_SERVER_CLIENT = "client";
-    static final String WEBSOCKET_CLIENT_OR_SERVER_SERVER = "server";
+    static final String CLIENT_OR_SERVER_CLIENT = "client";
+    static final String CLIENT_OR_SERVER_SERVER = "server";
 
-    public static final String WEBSOCKET_MESSAGE_TYPE_TEXT = "text";
-    public static final String WEBSOCKET_MESSAGE_TYPE_BINARY = "binary";
-    public static final String WEBSOCKET_MESSAGE_TYPE_CONTROL = "control";
-    public static final String WEBSOCKET_MESSAGE_TYPE_CLOSE = "close";
+    public static final String MESSAGE_TYPE_TEXT = "text";
+    public static final String MESSAGE_TYPE_BINARY = "binary";
+    public static final String MESSAGE_TYPE_CONTROL = "control";
+    public static final String MESSAGE_TYPE_CLOSE = "close";
 
-    static final String WEBSOCKET_ERROR_TYPE_CONNECTION = "connection";
-    public static final String WEBSOCKET_ERROR_TYPE_CLOSE = "close";
-    public static final String WEBSOCKET_ERROR_TYPE_MESSAGE_SENT = "message_sent";
-    static final String WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
-    static final String WEBSOCKET_ERROR_TYPE_UNEXPECTED = "unexpected";
+    static final String ERROR_TYPE_CONNECTION = "connection";
+    public static final String ERROR_TYPE_CLOSE = "close";
+    public static final String ERROR_TYPE_MESSAGE_SENT = "message_sent";
+    static final String ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
+    static final String ERROR_TYPE_UNEXPECTED = "unexpected";
 
-    static final String WEBSOCKET_UNKNOWN = "unknown";
+    static final String UNKNOWN = "unknown";
 
     private WebSocketObservabilityConstants(){
     }
