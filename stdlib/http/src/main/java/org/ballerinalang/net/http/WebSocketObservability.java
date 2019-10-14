@@ -86,7 +86,7 @@ public class WebSocketObservability {
     private static final String WEBSOCKET_UNKNOWN = "unknown";
 
     /**
-     * This method observes all incoming WebSocket connection requests.
+     * Observes incoming WebSocket connection request.
      *
      * @param connectionInfo information regarding connection.
      * @param result whether the connection was successful or not.
