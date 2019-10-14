@@ -64,7 +64,7 @@ public class WebSocketObservabilityUtil {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketObservabilityUtil.class);
 
     /**
-     * This method observes all incoming WebSocket connection requests.
+     * Observes incoming WebSocket connection requests.
      *
      * @param connectionInfo information regarding connection.
      */
@@ -93,7 +93,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes successful WebSocket connections.
+     * Observes successful WebSocket connections.
      *
      * @param connectionInfo information regarding connection.
      */
@@ -131,7 +131,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes messages pushed (sent).
+     * Observes messages pushed (sent).
      *
      * @param type type of message pushed (text, binary, control, close).
      * @param result whether the push was successful or not.
@@ -175,7 +175,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes messages received.
+     * Observes messages received.
      *
      * @param type type of message pushed (text, binary, control, close).
      * @param connectionInfo information regarding connection.
@@ -217,7 +217,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes WebSocket connection closures.
+     * Observes WebSocket connection closures.
      *
      * @param connectionInfo information regarding connection.
      */
@@ -254,7 +254,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes WebSocket errors where the errorType is not related to a message being sent or received,
+     * Observes WebSocket errors where the errorType is not related to a message being sent or received,
      * or the type of the message is unknown.
      *
      * @param connectionInfo information regarding connection.
@@ -266,7 +266,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method observes WebSocket errors where the errorType is related to a message being sent or received.
+     * Observes WebSocket errors where the errorType is related to a message being sent or received.
      * and the type of the message is known.
      *
      * @param connectionInfo information regarding connection.
@@ -312,7 +312,7 @@ public class WebSocketObservabilityUtil {
     }
 
     /**
-     * This method determines whether the current context is server or client and sets the tags accordingly.
+     * Determines whether the current context is server or client and sets the tags accordingly.
      * If server, the service bas path.
      * If client, the remote URL
      *
