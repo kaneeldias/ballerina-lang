@@ -110,7 +110,7 @@ public class WebSocketObservabilityUtil {
      * @param result whether the push was successful or not.
      * @param connectionInfo information regarding connection.
      */
-    public static void observePush(String type, String result, WebSocketOpenConnectionInfo connectionInfo) {
+    public static void observeSend(String type, String result, WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = initializeObserverContext(connectionInfo);
             //Define type of message (text, binary, control, clsoe) and result (successful, failed)

@@ -72,7 +72,7 @@ public class Close {
                 callback.notifySuccess();
 
                 //Observe close message sent
-                WebSocketObservabilityUtil.observePush(WEBSOCKET_MESSAGE_TYPE_CLOSE, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+                WebSocketObservabilityUtil.observeSend(WEBSOCKET_MESSAGE_TYPE_CLOSE, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                        connectionInfo);
             });
         } catch (Exception e) {

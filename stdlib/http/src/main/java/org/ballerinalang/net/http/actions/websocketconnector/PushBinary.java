@@ -66,7 +66,7 @@ public class PushBinary {
             WebSocketUtil.handleWebSocketCallback(callback, webSocketChannelFuture, log);
 
             //Observe binary message sent
-            WebSocketObservabilityUtil.observePush(WEBSOCKET_MESSAGE_TYPE_BINARY, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+            WebSocketObservabilityUtil.observeSend(WEBSOCKET_MESSAGE_TYPE_BINARY, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                    connectionInfo);
         } catch (Exception e) {
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));

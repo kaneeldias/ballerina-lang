@@ -65,7 +65,7 @@ public class Ping {
             WebSocketUtil.handleWebSocketCallback(callback, future, log);
 
             //Observe ping message sent
-            WebSocketObservabilityUtil.observePush(WEBSOCKET_MESSAGE_TYPE_CONTROL, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+            WebSocketObservabilityUtil.observeSend(WEBSOCKET_MESSAGE_TYPE_CONTROL, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
                                                    connectionInfo);
         } catch (Exception e) {
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
