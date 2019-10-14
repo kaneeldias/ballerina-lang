@@ -56,6 +56,7 @@ public class WebSocketObservabilityConstants {
     public static final String MESSAGE_TYPE_CONTROL = "control";
     public static final String MESSAGE_TYPE_CLOSE = "close";
 
+    static final String ERROR_TYPE_HANDSHAKE = "handshake";
     static final String ERROR_TYPE_CONNECTION = "connection";
     public static final String ERROR_TYPE_CLOSE = "close";
     public static final String ERROR_TYPE_MESSAGE_SENT = "message_sent";

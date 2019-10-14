@@ -101,6 +101,10 @@ public class WebSocketUtil {
 
             @Override
             public void onError(Throwable throwable) {
+                //Observe error
+                WebSocketObservabilityUtil.observeError(WebSocketObservabilityConstants.ERROR_TYPE_HANDSHAKE,
+                                                        throwable.getMessage(), wsService.getBasePath());
+
                 if (callback != null) {
                     callback.notifyFailure(new WebSocketException(WsInvalidHandshakeError,
                                                                   "Unable to complete handshake:" +
@@ -108,7 +112,6 @@ public class WebSocketUtil {
                 } else {
                     throw new WebSocketException(WsInvalidHandshakeError, "Unable to complete handshake");
                 }
-                logger.error("Unable to complete handshake", throwable);
             }
 
         });

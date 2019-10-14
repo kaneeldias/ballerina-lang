@@ -216,12 +216,35 @@ public class WebSocketObservabilityUtil {
             }
         }
     }
+
+    /**
+     * Observes WebSocket errors before the connection is initialized (handshake errors etc).
+     *
+     * @param errorType type of error (connection, closure, message sent/received).
+     * @param errorMessage error message.
+     */
+    public static void observeError(String errorType, String errorMessage, String url) {
+        if (ObserveUtils.isObservabilityEnabled()) {
+            ObserverContext observerContext = new ObserverContext();
+            observerContext.setConnectorName(ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET);
+            observerContext.addTag(WebSocketObservabilityConstants.TAG_ERROR_TYPE, errorType);
+            Set<Tag> tags = getAllTags(observerContext);
+            MetricRegistry metricRegistry = DefaultMetricRegistry.getInstance();
+            //Increment errors metric
+            metricRegistry.counter(new MetricId(ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET + "_" +
+                                                        WebSocketObservabilityConstants.METRIC_ERRORS,
+                                                WebSocketObservabilityConstants.METRIC_ERRORS_DESC, tags)).increment();
+
+            //Log error
+            logger.error("type:{}, message: {}, service/url:{}", errorType, errorMessage, url);
+        }
+    }
+
     /**
      * Initializes the observer context object by setting the connector name, connection ID (if available) and service.
      *
      * @param connectionInfo information regarding connection.
      */
-
     private static ObserverContext initializeObserverContext(WebSocketOpenConnectionInfo connectionInfo) {
         ObserverContext observerContext = new ObserverContext();
         observerContext.setConnectorName(ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET);
