@@ -222,6 +222,7 @@ public class WebSocketObservabilityUtil {
      *
      * @param errorType type of error (connection, closure, message sent/received).
      * @param errorMessage error message.
+     * @param url service base path or remote url.
      */
     public static void observeError(String errorType, String errorMessage, String url) {
         if (ObserveUtils.isObservabilityEnabled()) {

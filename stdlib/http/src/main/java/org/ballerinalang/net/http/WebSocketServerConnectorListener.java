@@ -39,7 +39,6 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -95,7 +94,7 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
             //Observe error
             WebSocketObservabilityUtil.observeError(
                     connectionManager.getConnectionInfo(webSocketHandshaker.getChannelId()),
-                    WEBSOCKET_ERROR_TYPE_CONNECTION, "service not found");
+                    WebSocketObservabilityConstants.ERROR_TYPE_CONNECTION, "service not found");
         }
     }
 
