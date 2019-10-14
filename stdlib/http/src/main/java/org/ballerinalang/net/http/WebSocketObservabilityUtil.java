@@ -67,9 +67,8 @@ public class WebSocketObservabilityUtil {
      * This method observes all incoming WebSocket connection requests.
      *
      * @param connectionInfo information regarding connection.
-     * @param result whether the connection was successful or not.
      */
-    static void observeRequest(WebSocketOpenConnectionInfo connectionInfo, String result) {
+    static void observeRequest(WebSocketOpenConnectionInfo connectionInfo) {
         if (ObserveUtils.isObservabilityEnabled()) {
             ObserverContext observerContext = new ObserverContext();
             observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
@@ -79,7 +78,6 @@ public class WebSocketObservabilityUtil {
                 observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
             }
             setObserveService(observerContext, connectionInfo);
-            observerContext.addTag(TAG_KEY_RESULT, result);
             Map<String, String> tags = observerContext.getTags();
             Set<Tag> allTags = new HashSet<>(tags.size());
             Tags.tags(allTags, observerContext.getTags());

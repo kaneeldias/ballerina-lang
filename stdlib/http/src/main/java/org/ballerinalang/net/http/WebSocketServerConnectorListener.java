@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -91,8 +90,7 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
             }
             //Observe new successful connection request
             WebSocketObservabilityUtil.observeRequest(connectionManager.
-                                                          getConnectionInfo(webSocketHandshaker.getChannelId()),
-                                                      WEBSOCKET_MESSAGE_RESULT_SUCCESS);
+                                                          getConnectionInfo(webSocketHandshaker.getChannelId()));
         } else {
             //Observe error
             WebSocketObservabilityUtil.observeError(
