@@ -27,7 +27,7 @@ import org.wso2.transport.http.netty.message.HttpCarbonResponse;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinalang.net.http.HttpConstants.PROTOCOL_HTTP_PKG_ID;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_CONNECTION;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
 
 /**
  * The handshake listener for the client.
@@ -70,7 +70,7 @@ public class WebSocketClientHandshakeListener implements ClientHandshakeListener
         countDownLatch.countDown();
 
         //Observe new connection
-        WebSocketObservability.observeConnection(connectionInfo);
+        WebSocketObservabilityUtil.observeConnection(connectionInfo);
     }
 
     @Override
@@ -80,12 +80,14 @@ public class WebSocketClientHandshakeListener implements ClientHandshakeListener
         }
         ObjectValue webSocketConnector = BallerinaValues.createObjectValue(PROTOCOL_HTTP_PKG_ID,
                                                                            WebSocketConstants.WEBSOCKET_CONNECTOR);
-        WebSocketOpenConnectionInfo connectionInfo = getWebSocketOpenConnectionInfo(null, webSocketConnector);
+        WebSocketOpenConnectionInfo connectionInfo =
+                getWebSocketOpenConnectionInfo(null, webSocketConnector);
         countDownLatch.countDown();
         WebSocketDispatcher.dispatchError(connectionInfo, throwable);
 
         //Observe connection error
-        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CONNECTION, throwable.getMessage());
+        WebSocketObservabilityUtil.observeError(connectionInfo,
+                                                WEBSOCKET_ERROR_TYPE_CONNECTION, throwable.getMessage());
     }
 
     private WebSocketOpenConnectionInfo getWebSocketOpenConnectionInfo(WebSocketConnection webSocketConnection,

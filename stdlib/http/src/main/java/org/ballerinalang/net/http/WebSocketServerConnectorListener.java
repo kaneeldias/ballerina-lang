@@ -39,13 +39,13 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_CONNECTION;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_BINARY;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CONTROL;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_TEXT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_BINARY;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -95,13 +95,14 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
                                               null);
             }
             //Observe new successful connection request
-            WebSocketObservability.observeRequest(connectionManager.
+            WebSocketObservabilityUtil.observeRequest(connectionManager.
                                                           getConnectionInfo(webSocketHandshaker.getChannelId()),
-                           WEBSOCKET_MESSAGE_RESULT_SUCCESS);
+                                                      WEBSOCKET_MESSAGE_RESULT_SUCCESS);
         } else {
             //Observe error
-            WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketHandshaker.getChannelId()),
-                                                WEBSOCKET_ERROR_TYPE_CONNECTION, "service not found");
+            WebSocketObservabilityUtil.observeError(
+                    connectionManager.getConnectionInfo(webSocketHandshaker.getChannelId()),
+                    WEBSOCKET_ERROR_TYPE_CONNECTION, "service not found");
         }
     }
 
@@ -171,8 +172,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe new text message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT,
-                                       connectionManager.getConnectionInfo(
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT,
+                                                    connectionManager.getConnectionInfo(
                                                webSocketTextMessage.getWebSocketConnection().getChannelId()));
     }
 
@@ -187,8 +188,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe new binary message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY,
-                                       connectionManager.getConnectionInfo(
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY,
+                                                    connectionManager.getConnectionInfo(
                                                webSocketBinaryMessage.getWebSocketConnection().getChannelId()));
     }
 
@@ -203,8 +204,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe new control message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL,
-                                       connectionManager.getConnectionInfo(
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL,
+                                                    connectionManager.getConnectionInfo(
                                                webSocketControlMessage.getWebSocketConnection().getChannelId()));
     }
 
@@ -218,8 +219,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe new close message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE,
-                                       connectionManager.getConnectionInfo(
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE,
+                                                    connectionManager.getConnectionInfo(
                                                webSocketCloseMessage.getWebSocketConnection().getChannelId()));
     }
 
@@ -237,7 +238,7 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         //i.e when given invalid sub-protocols
 
         //Observe connection closure
-        WebSocketObservability.observeClose(connectionInfo);
+        WebSocketObservabilityUtil.observeClose(connectionInfo);
     }
 
     @Override
@@ -246,8 +247,8 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
                 connectionManager.getConnectionInfo(webSocketConnection.getChannelId()), throwable);
 
         //Observe error
-        WebSocketObservability.observeError(connectionManager.getConnectionInfo(webSocketConnection.getChannelId()),
-                                   WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED, throwable.getMessage());
+        WebSocketObservabilityUtil.observeError(connectionManager.getConnectionInfo(webSocketConnection.getChannelId()),
+                                                WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED, throwable.getMessage());
     }
 
     @Override

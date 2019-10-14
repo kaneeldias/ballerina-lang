@@ -24,7 +24,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.http.WebSocketConstants;
-import org.ballerinalang.net.http.WebSocketObservability;
+import org.ballerinalang.net.http.WebSocketObservabilityUtil;
 import org.ballerinalang.net.http.WebSocketOpenConnectionInfo;
 import org.ballerinalang.net.http.WebSocketUtil;
 import org.ballerinalang.net.http.exception.WebSocketException;
@@ -32,9 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.ballerinalang.net.http.WebSocketConstants.ErrorCode.WsConnectionError;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_SENT;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_TEXT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_SENT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * {@code Get} is the GET action implementation of the HTTP Connector.
@@ -62,16 +62,17 @@ public class PushText {
             WebSocketUtil.handleWebSocketCallback(callback, future, log);
 
             //Observe text message sent
-            WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_TEXT, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
-                                               connectionInfo);
+            WebSocketObservabilityUtil.observePush(WEBSOCKET_MESSAGE_TYPE_TEXT, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+                                                   connectionInfo);
         } catch (Exception e) {
             callback.setReturnValues(new WebSocketException(WsConnectionError, e.getMessage()));
             callback.notifySuccess();
 
             //Observe error when sending text message
-            WebSocketObservability.observeError((WebSocketOpenConnectionInfo) wsConnection
+            WebSocketObservabilityUtil.observeError((WebSocketOpenConnectionInfo) wsConnection
                                  .getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                         WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_TEXT, e.getMessage());
+                                                    WEBSOCKET_ERROR_TYPE_MESSAGE_SENT, WEBSOCKET_MESSAGE_TYPE_TEXT,
+                                                    e.getMessage());
         }
         return null;
     }

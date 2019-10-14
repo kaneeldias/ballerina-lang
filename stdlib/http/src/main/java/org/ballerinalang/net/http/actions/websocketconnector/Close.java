@@ -24,7 +24,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.http.WebSocketConstants;
-import org.ballerinalang.net.http.WebSocketObservability;
+import org.ballerinalang.net.http.WebSocketObservabilityUtil;
 import org.ballerinalang.net.http.WebSocketOpenConnectionInfo;
 import org.ballerinalang.net.http.WebSocketUtil;
 import org.ballerinalang.net.http.exception.WebSocketException;
@@ -36,9 +36,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.ballerinalang.net.http.WebSocketConstants.ErrorCode;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CLOSE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CLOSE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
 
 /**
  * {@code Get} is the GET action implementation of the HTTP Connector.
@@ -72,17 +72,17 @@ public class Close {
                 callback.notifySuccess();
 
                 //Observe close message sent
-                WebSocketObservability.observePush(WEBSOCKET_MESSAGE_TYPE_CLOSE, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
-                                                   connectionInfo);
+                WebSocketObservabilityUtil.observePush(WEBSOCKET_MESSAGE_TYPE_CLOSE, WEBSOCKET_MESSAGE_RESULT_SUCCESS,
+                                                       connectionInfo);
             });
         } catch (Exception e) {
             callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionError, e.getMessage()));
             callback.notifySuccess();
 
             //Observe error when sending close message
-            WebSocketObservability.observeError((WebSocketOpenConnectionInfo)
+            WebSocketObservabilityUtil.observeError((WebSocketOpenConnectionInfo)
                                  wsConnection.getNativeData(WebSocketConstants.NATIVE_DATA_WEBSOCKET_CONNECTION_INFO),
-                         WEBSOCKET_ERROR_TYPE_CLOSE, e.getMessage());
+                                                    WEBSOCKET_ERROR_TYPE_CLOSE, e.getMessage());
         }
         return null;
     }
@@ -105,7 +105,7 @@ public class Close {
                         new WebSocketException(ErrorCode.WsConnectionClosureError, cause.getMessage()));
 
                 //Observe connection closure error
-                WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, cause.getMessage());
+                WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, cause.getMessage());
             } else {
                 callback.setReturnValues(null);
             }
@@ -127,7 +127,7 @@ public class Close {
                     callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionClosureError, errMsg));
 
                     //Observe connection closure error
-                    WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
+                    WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
                 }
             }
         } catch (InterruptedException err) {
@@ -135,7 +135,7 @@ public class Close {
             callback.setReturnValues(new WebSocketException(ErrorCode.WsConnectionClosureError, errMsg));
 
             //Observe connection closure error
-            WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
+            WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_CLOSE, errMsg);
 
             Thread.currentThread().interrupt();
         }

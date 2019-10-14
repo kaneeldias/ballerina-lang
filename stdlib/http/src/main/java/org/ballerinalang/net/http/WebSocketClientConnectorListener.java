@@ -26,11 +26,11 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketControlMessage;
 import org.wso2.transport.http.netty.contract.websocket.WebSocketHandshaker;
 import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_BINARY;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_CONTROL;
-import static org.ballerinalang.net.http.WebSocketObservability.WEBSOCKET_MESSAGE_TYPE_TEXT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_BINARY;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -58,7 +58,7 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe text message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT, connectionInfo);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe binary message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY, connectionInfo);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe control message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL, connectionInfo);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe close message received
-        WebSocketObservability.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE, connectionInfo);
+        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE, connectionInfo);
     }
 
     @Override
@@ -102,8 +102,8 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         WebSocketDispatcher.dispatchError(connectionInfo, throwable);
 
         //Observe message received error
-        WebSocketObservability.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED,
-                                            throwable.getMessage());
+        WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED,
+                                                throwable.getMessage());
     }
 
     @Override
@@ -124,6 +124,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         }
 
         //Observe connection closure
-        WebSocketObservability.observeClose(connectionInfo);
+        WebSocketObservabilityUtil.observeClose(connectionInfo);
     }
 }

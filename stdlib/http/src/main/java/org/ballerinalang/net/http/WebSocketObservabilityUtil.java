@@ -34,56 +34,34 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinalang.jvm.observability.ObservabilityConstants.SERVER_CONNECTOR_WEBSOCKET;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_CONNECTIONS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_CONNECTIONS_DESC;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_ERRORS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_ERRORS_DESC;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_MESSAGES_RECEIVED;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_MESSAGES_RECEIVED_DESC;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_MESSAGES_SENT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_MESSAGES_SENT_DESC;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_REQUESTS;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.METRIC_REQUESTS_DESC;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_CLIENT_OR_SERVER;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_CONNECTION_ID;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_ERROR_TYPE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_KEY_RESULT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_MESSAGE_TYPE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.TAG_SERVICE;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_CLIENT_OR_SERVER_CLIENT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_CLIENT_OR_SERVER_SERVER;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_UNKNOWN;
 
 /**
  * Providing observability functionality to WebSockets.
  *
  * @since 1.1.0
  */
-public class WebSocketObservability {
+public class WebSocketObservabilityUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketObservability.class);
-
-    //Observability Constants
-    private static final String TAG_CONNECTION_ID = "connectionID";
-    private static final String TAG_KEY_RESULT = "result";
-    private static final String TAG_CLIENT_OR_SERVER = "client_or_server";
-    private static final String TAG_SERVICE = "service";
-    private static final String TAG_MESSAGE_TYPE = "type";
-    private static final String TAG_ERROR_TYPE = "error_type";
-
-    private static final String METRIC_REQUESTS = "requests";
-    private static final String METRIC_REQUESTS_DESC = "Number of WebSocket connection requests";
-
-    private static final String METRIC_CONNECTIONS = "connections";
-    private static final String METRIC_CONNECTIONS_DESC = "Number of currently active connections";
-
-    private static final String METRIC_MESSAGES_RECEIVED = "messages_received";
-    private static final String METRIC_MESSAGES_RECEIVED_DESC = "Number of messages received";
-
-    private static final String METRIC_MESSAGES_SENT = "messages_sent";
-    private static final String METRIC_MESSAGES_SENT_DESC = "Number of messages sent";
-
-    public static final String WEBSOCKET_MESSAGE_RESULT_SUCCESS = "success";
-
-    private static final String METRIC_ERRORS = "errors";
-    private static final String METRIC_ERRORS_DESC = "Number of errors";
-
-    private static final String WEBSOCKET_CLIENT_OR_SERVER_CLIENT = "client";
-    private static final String WEBSOCKET_CLIENT_OR_SERVER_SERVER = "server";
-
-    public static final String WEBSOCKET_MESSAGE_TYPE_TEXT = "text";
-    public static final String WEBSOCKET_MESSAGE_TYPE_BINARY = "binary";
-    public static final String WEBSOCKET_MESSAGE_TYPE_CONTROL = "control";
-    public static final String WEBSOCKET_MESSAGE_TYPE_CLOSE = "close";
-
-    static final String WEBSOCKET_ERROR_TYPE_CONNECTION = "connection";
-    public static final String WEBSOCKET_ERROR_TYPE_CLOSE = "close";
-    public static final String WEBSOCKET_ERROR_TYPE_MESSAGE_SENT = "message_sent";
-    static final String WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED = "message_received";
-    static final String WEBSOCKET_ERROR_TYPE_UNEXPECTED = "unexpected";
-
-    private static final String WEBSOCKET_UNKNOWN = "unknown";
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketObservabilityUtil.class);
 
     /**
      * This method observes all incoming WebSocket connection requests.
@@ -381,7 +359,7 @@ public class WebSocketObservability {
             return WEBSOCKET_UNKNOWN;
         }
     }
-    private WebSocketObservability(){
+    private WebSocketObservabilityUtil(){
 
     }
 }

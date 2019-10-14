@@ -53,6 +53,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.ballerinalang.net.http.WebSocketConstants.STATUS_CODE_ABNORMAL_CLOSURE;
 import static org.ballerinalang.net.http.WebSocketConstants.STATUS_CODE_FOR_NO_STATUS_CODE_PRESENT;
+import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_UNEXPECTED;
 
 /**
  * {@code WebSocketDispatcher} This is the web socket request dispatcher implementation which finds best matching
@@ -313,8 +314,8 @@ public class WebSocketDispatcher {
         AttachedFunction onErrorResource = webSocketService.getResourceByName(
                 WebSocketConstants.RESOURCE_NAME_ON_ERROR);
         if (isUnexpectedError(throwable)) {
-            WebSocketObservability.observeError(connectionInfo, WebSocketObservability.WEBSOCKET_ERROR_TYPE_UNEXPECTED,
-            "Unexpected error");
+            WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_UNEXPECTED,
+                                                    "Unexpected error");
         }
         if (onErrorResource == null) {
             ErrorHandlerUtils.printError(throwable);

@@ -96,7 +96,7 @@ public class WebSocketUtil {
                 }
 
                 //Observe new connection
-                WebSocketObservability.observeConnection(connectionInfo);
+                WebSocketObservabilityUtil.observeConnection(connectionInfo);
             }
 
             @Override
