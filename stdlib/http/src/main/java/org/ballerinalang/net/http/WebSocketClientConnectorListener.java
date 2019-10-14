@@ -26,12 +26,6 @@ import org.wso2.transport.http.netty.contract.websocket.WebSocketControlMessage;
 import org.wso2.transport.http.netty.contract.websocket.WebSocketHandshaker;
 import org.wso2.transport.http.netty.contract.websocket.WebSocketTextMessage;
 
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_BINARY;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
-
 /**
  * Ballerina Connector listener for WebSocket.
  *
@@ -56,9 +50,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe text message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT, connectionInfo);
     }
 
     @Override
@@ -68,9 +59,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe binary message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY, connectionInfo);
     }
 
     @Override
@@ -80,9 +68,6 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe control message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL, connectionInfo);
     }
 
     @Override
@@ -92,18 +77,11 @@ public class WebSocketClientConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe close message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE, connectionInfo);
     }
 
     @Override
     public void onError(WebSocketConnection webSocketConnection, Throwable throwable) {
         WebSocketDispatcher.dispatchError(connectionInfo, throwable);
-
-        //Observe message received error
-        WebSocketObservabilityUtil.observeError(connectionInfo, WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED,
-                                                throwable.getMessage());
     }
 
     @Override

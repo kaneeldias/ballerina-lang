@@ -40,12 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_CONNECTION;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED;
 import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_RESULT_SUCCESS;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_BINARY;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CLOSE;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_CONTROL;
-import static org.ballerinalang.net.http.WebSocketObservabilityConstants.WEBSOCKET_MESSAGE_TYPE_TEXT;
 
 /**
  * Ballerina Connector listener for WebSocket.
@@ -170,11 +165,6 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe new text message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_TEXT,
-                                                    connectionManager.getConnectionInfo(
-                                               webSocketTextMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -186,11 +176,6 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe new binary message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_BINARY,
-                                                    connectionManager.getConnectionInfo(
-                                               webSocketBinaryMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -202,11 +187,6 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe new control message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CONTROL,
-                                                    connectionManager.getConnectionInfo(
-                                               webSocketControlMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -217,11 +197,6 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
         } catch (IllegalAccessException e) {
             // Ignore as it is not possible have an Illegal access
         }
-
-        //Observe new close message received
-        WebSocketObservabilityUtil.observeOnMessage(WEBSOCKET_MESSAGE_TYPE_CLOSE,
-                                                    connectionManager.getConnectionInfo(
-                                               webSocketCloseMessage.getWebSocketConnection().getChannelId()));
     }
 
     @Override
@@ -245,10 +220,6 @@ public class WebSocketServerConnectorListener implements WebSocketConnectorListe
     public void onError(WebSocketConnection webSocketConnection, Throwable throwable) {
         WebSocketDispatcher.dispatchError(
                 connectionManager.getConnectionInfo(webSocketConnection.getChannelId()), throwable);
-
-        //Observe error
-        WebSocketObservabilityUtil.observeError(connectionManager.getConnectionInfo(webSocketConnection.getChannelId()),
-                                                WEBSOCKET_ERROR_TYPE_MESSAGE_RECEIVED, throwable.getMessage());
     }
 
     @Override
