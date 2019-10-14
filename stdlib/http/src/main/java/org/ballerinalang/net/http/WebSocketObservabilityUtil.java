@@ -97,15 +97,9 @@ public class WebSocketObservabilityUtil {
                                               METRIC_CONNECTIONS_DESC, tags)).increment();
 
             //Log connection
-            try {
-                logger.info("WS new connection established. connectionID: {}, service: {}",
-                            connectionInfo.getWebSocketConnection().getChannelId(),
-                            observerContext.getTags().get(TAG_SERVICE));
-            } catch (IllegalAccessException e) {
-                logger.info("WS new connection established. connectionID: {}, service: {}",
-                            WEBSOCKET_UNKNOWN,
-                            observerContext.getTags().get(TAG_SERVICE));
-            }
+            logger.info("WS new connection established. connectionID: {}, service/url: {}",
+                        getConnectionId(connectionInfo),
+                        getServicePathOrClientUrl(connectionInfo));
         }
     }
 
@@ -129,17 +123,10 @@ public class WebSocketObservabilityUtil {
                                                 METRIC_MESSAGES_SENT_DESC, tags)).increment();
 
             //Log message sent
-            try {
-                logger.info("WS message sent. connectionID: {}, service: {}, type: {}",
-                            connectionInfo.getWebSocketConnection().getChannelId(),
-                            observerContext.getTags().get(TAG_SERVICE),
-                            type);
-            } catch (IllegalAccessException e) {
-                logger.info("WS message sent. connectionID: {}, service: {}, type: {}",
-                            WEBSOCKET_UNKNOWN,
-                            observerContext.getTags().get(TAG_SERVICE),
-                            type);
-            }
+            logger.info("WS message sent. connectionID: {}, service/url: {}, type: {}",
+                        getConnectionId(connectionInfo),
+                        getServicePathOrClientUrl(connectionInfo),
+                        type);
         }
     }
 
@@ -161,17 +148,10 @@ public class WebSocketObservabilityUtil {
                                                 METRIC_MESSAGES_RECEIVED_DESC, tags)).increment();
 
             //Log message received
-            try {
-                logger.info("WS message received. connectionID: {}, service: {}, type:{}",
-                            connectionInfo.getWebSocketConnection().getChannelId(),
-                            observerContext.getTags().get(TAG_SERVICE),
-                            type);
-            } catch (IllegalAccessException e) {
-                logger.info("WS message received. connectionID: {}, service: {}, type:{}",
-                            WEBSOCKET_UNKNOWN,
-                            observerContext.getTags().get(TAG_SERVICE),
-                            type);
-            }
+            logger.info("WS message received. connectionID: {}, service/url: {}, type:{}",
+                        getConnectionId(connectionInfo),
+                        getServicePathOrClientUrl(connectionInfo),
+                        type);
         }
     }
 
@@ -190,15 +170,9 @@ public class WebSocketObservabilityUtil {
                                               METRIC_CONNECTIONS_DESC, tags)).decrement();
 
             //Log connection closure
-            try {
-                logger.info("WS connection closed. connectionID: {}, service: {}",
-                            connectionInfo.getWebSocketConnection().getChannelId(),
-                            observerContext.getTags().get(TAG_SERVICE));
-            } catch (IllegalAccessException e) {
-                logger.info("WS connection closed. connectionID: {}, service: {}",
-                            WEBSOCKET_UNKNOWN,
-                            observerContext.getTags().get(TAG_SERVICE));
-            }
+            logger.info("WS connection closed. connectionID: {}, service/url: {}",
+                        getConnectionId(connectionInfo),
+                        getServicePathOrClientUrl(connectionInfo));
         }
     }
 
@@ -240,12 +214,13 @@ public class WebSocketObservabilityUtil {
 
             //Log error
             if (messageType == null) {
-                logger.error("type:{}, message: {}, connectionId: {}, service:{}",
-                             errorType, errorMessage, getConnectionId(connectionInfo), getService(connectionInfo));
+                logger.error("type:{}, message: {}, connectionId: {}, service/url:{}",
+                             errorType, errorMessage, getConnectionId(connectionInfo),
+                             getServicePathOrClientUrl(connectionInfo));
             } else {
-                logger.error("type:{}/{}, message: {}, connectionId: {}, service:{}",
+                logger.error("type:{}/{}, message: {}, connectionId: {}, service/url:{}",
                              errorType, messageType, errorMessage, getConnectionId(connectionInfo),
-                             getService(connectionInfo));
+                             getServicePathOrClientUrl(connectionInfo));
             }
         }
     }
@@ -258,12 +233,8 @@ public class WebSocketObservabilityUtil {
     private static ObserverContext initializeObserverContext(WebSocketOpenConnectionInfo connectionInfo) {
         ObserverContext observerContext = new ObserverContext();
         observerContext.setConnectorName(SERVER_CONNECTOR_WEBSOCKET);
-        try {
-            observerContext.addTag(TAG_CONNECTION_ID, connectionInfo.getWebSocketConnection().getChannelId());
-        } catch (IllegalAccessException e) {
-            observerContext.addTag(TAG_CONNECTION_ID, WEBSOCKET_UNKNOWN);
-        }
-        setObserveService(observerContext, connectionInfo);
+        observerContext.addTag(TAG_CONNECTION_ID, getConnectionId(connectionInfo));
+        setObserveServiceOrURL(observerContext, connectionInfo);
         return observerContext;
     }
 
@@ -275,7 +246,8 @@ public class WebSocketObservabilityUtil {
      * @param observerContext current observer context
      * @param connectionInfo information regarding connection.
      */
-    private static void setObserveService(ObserverContext observerContext, WebSocketOpenConnectionInfo connectionInfo) {
+    private static void setObserveServiceOrURL(ObserverContext observerContext,
+                                               WebSocketOpenConnectionInfo connectionInfo) {
         try {
             String service = connectionInfo.getService().getBasePath();
             if (service != null) {
@@ -285,7 +257,8 @@ public class WebSocketObservabilityUtil {
             } else {
                 //if base path is not set (i.e. client)
                 observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_CLIENT_OR_SERVER_CLIENT);
-                observerContext.addTag(TAG_SERVICE, connectionInfo.getWebSocketEndpoint().getStringValue("url"));
+                observerContext.addTag(TAG_SERVICE,
+                                       connectionInfo.getWebSocketEndpoint().getStringValue("url"));
             }
         } catch (NullPointerException e) {
             observerContext.addTag(TAG_CLIENT_OR_SERVER, WEBSOCKET_UNKNOWN);
@@ -301,7 +274,7 @@ public class WebSocketObservabilityUtil {
         return allTags;
     }
 
-    private static String getService(WebSocketOpenConnectionInfo connectionInfo) {
+    private static String getServicePathOrClientUrl(WebSocketOpenConnectionInfo connectionInfo) {
         try {
             String service = connectionInfo.getService().getBasePath();
             if (service != null) {
